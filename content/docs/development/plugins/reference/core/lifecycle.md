@@ -1,0 +1,68 @@
++++
+title = "Lifecycle"
+description = "The lifecycle and lifecycle-handler interfaces."
+weight = 1
++++
+
+## Interface `lifecycle`
+
+Provides host shutdown requests.
+
+### Function `shutdown`
+
+Requests graceful host shutdown or restart.
+
+Success means the request is accepted.
+
+Returns an error if the plugin does not have shutdown permission
+(`permission-denied`).
+
+```wit
+interface lifecycle {
+    shutdown: func(action: shutdown-action) -> result<_, host-error>;
+}
+```
+
+### Enum `shutdown-action`
+
+A host shutdown action.
+
+```wit
+interface lifecycle {
+    enum shutdown-action {
+        stop,
+        restart,
+    }
+}
+```
+
+## Interface `lifecycle-handler`
+
+Provides plugin initialization and cleanup callbacks.
+
+### Function `initialization`
+
+Initializes the plugin with the provided settings.
+
+Called once during startup.
+
+Memory does not persist between callbacks. Store settings and other
+state needed later in the key-value store.
+
+```wit
+interface lifecycle-handler {
+    initialization: async func(settings: json) -> result<_, plugin-error>;
+}
+```
+
+### Function `shutdown`
+
+Performs final cleanup for the plugin.
+
+Called during graceful shutdown.
+
+```wit
+interface lifecycle-handler {
+    shutdown: async func() -> result<_, plugin-error>;
+}
+```

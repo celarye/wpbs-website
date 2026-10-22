@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+    {%- if page and page.description %}
+    <meta name="description" content="{{ page.description }}">
+    {%- elif section and section.description %}
+    <meta name="description" content="{{ section.description }}">
+    {%- else %}
+    <meta name="description" content="{{ config.description }}">
+    {%- endif %}
+    <link rel="icon" href="{{ get_url(path='favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ get_url(path='style.css') }}">
+    <link rel="stylesheet" href="{{ get_url(path='giallo-light.css') }}">
+    <link rel="stylesheet" href="{{ get_url(path='giallo-dark.css') }}" media="(prefers-color-scheme: dark)" id="code-dark">
+    <script>
+        // Inline, so these apply before the page is drawn.
+        function applyTheme(theme) {
+            const root = document.documentElement;
+            const codeDark = document.getElementById("code-dark");
+            if (theme) {
+                root.dataset.theme = theme;
+                codeDark.media = theme === "dark" ? "all" : "not all";
+            } else {
+                delete root.dataset.theme;
+                codeDark.media = "(prefers-color-scheme: dark)";
+            }
+        }
+        try { applyTheme(localStorage.getItem("theme")); } catch (_) {}
+        document.documentElement.classList.add("js");
+        if (/Mac|iPhone|iPad/.test(navigator.platform)) {
+            document.documentElement.classList.add("apple");
+        }
+    </script>
+    <script type="module" src="{{ get_url(path='scripts/theme.js') }}"></script>
+    <script type="module" src="{{ get_url(path='scripts/code.js') }}"></script>
+    <script type="module" src="{{ get_url(path='scripts/tabs.js') }}"></script>
+    <script type="module" src="{{ get_url(path='scripts/collapsible.js') }}"></script>
+    <script type="module" src="{{ get_url(path='scripts/search.js') }}"></script>
+    <script type="module" src="{{ get_url(path='scripts/menu.js') }}"></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="{{ get_url(path='/') }}">
+            <img src="{{ get_url(path='favicon.svg') }}" alt="" width="24" height="24">wpbs
+        </a>
+        <nav class="site-nav">
+            <button class="search-button" type="button" aria-label="Search" aria-haspopup="dialog">
+                {{<icon.search />}}<span>Search</span><kbd><span class="key-ctrl">Ctrl</span><span class="key-cmd">{{<icon.command />}}</span> K</kbd>
+            </button>
+            <span class="nav-divider" aria-hidden="true"></span>
+            <button class="button secondary icon-button theme-toggle" type="button" aria-label="Toggle dark mode">{{<icon.theme name="sun" />}}{{<icon.theme name="moon" />}}</button>
+            <span class="nav-divider" aria-hidden="true"></span>
+            <a class="button secondary icon-button" href="https://github.com/wpbs-rs/wpbs" aria-label="GitHub">{{<icon.github />}}</a>
+        </nav>
+    </header>
+    <div class="search-modal" data-index="{{ get_url(path='search_index.en.js') }}" hidden>
+        <div class="search-backdrop"></div>
+        <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search the docs">
+            <div class="search-field">
+                {{<icon.search />}}
+                <input class="search-input" type="text" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off" spellcheck="false">
+                <button class="search-close" type="button" aria-label="Close search"><kbd>Esc</kbd></button>
+            </div>
+            <ul class="search-results"></ul>
+        </div>
+    </div>
+    {% block body %}{% endblock body %}
+    <footer class="site-footer">
+        © 2026 Eduard Smet. Licensed under
+        <a href="https://opensource.org/license/apache-2-0">Apache-2.0</a> or
+        <a href="https://opensource.org/license/mit">MIT</a>.
+    </footer>
+</body>
+</html>

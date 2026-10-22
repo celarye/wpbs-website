@@ -1,0 +1,51 @@
+{%- if page -%}
+    {%- set current = page -%}
+{%- else -%}
+    {%- set current = section -%}
+{%- endif -%}
+{%- set docs = get_section(path="docs/_index.md") -%}
+{%- set entries %}{{<nav.order path={"docs/_index.md"} />}}{% endset -%}
+{%- set order = load_data(literal="[" ~ (entries | trim | trim_start(pat=",")) ~ "]", format="json") -%}
+{%- set_global prev = "" -%}
+{%- set_global next = "" -%}
+{%- for entry in order -%}
+    {%- if entry.url == current.permalink -%}
+        {%- if not loop.first %}{% set_global prev = order[loop.index0 - 1] %}{% endif -%}
+        {%- if not loop.last %}{% set_global next = order[loop.index0 + 1] %}{% endif -%}
+    {%- endif -%}
+{%- endfor -%}
+
+<div class="docs">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">Menu</button>
+    <aside class="sidebar" id="sidebar">
+        <a class="part{% if current.permalink == docs.permalink %} active{% endif %}" href="{{ docs.permalink }}">{{ docs.title }}</a>
+        <ul>
+            {%- for part in docs.subsections %}
+            {{<nav.tree path={part} current={current.permalink} depth={0} />}}
+            {%- endfor %}
+        </ul>
+    </aside>
+    <main class="content">
+        <h1>{{ current.title }}</h1>
+        {{ current.content | safe }}
+        {%- if not page and (section.pages or section.subsections) and section.path != docs.path %}
+        {%- if section.extra.ordered | default(value=false) %}{% set_global list = "ol" %}{% else %}{% set_global list = "ul" %}{% endif %}
+        {%- if section.extra.children_heading %}
+        <h2 id="{{ section.extra.children_heading | slugify }}">{{ section.extra.children_heading }}</h2>
+        {%- endif %}
+        <{{ list }} class="children">
+            {%- for p in section.pages %}
+            <li><a href="{{ p.permalink }}">{{ p.title }}</a>{% if p.description %}: {{ p.description }}{% endif %}</li>
+            {%- endfor %}
+            {%- for sub_path in section.subsections %}
+            {%- set sub = get_section(path=sub_path) %}
+            <li><a href="{{ sub.permalink }}">{{ sub.title }}</a>{% if sub.description %}: {{ sub.description }}{% endif %}</li>
+            {%- endfor %}
+        </{{ list }}>
+        {%- endif %}
+        <nav class="pager">
+            <span>{% if prev %}<a href="{{ prev.url }}">← {{ prev.title }}</a>{% endif %}</span>
+            <span>{% if next %}<a href="{{ next.url }}">{{ next.title }} →</a>{% endif %}</span>
+        </nav>
+    </main>
+</div>

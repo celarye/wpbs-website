@@ -1,0 +1,26 @@
+{#- One sidebar entry, with the section's pages and subsections below it.
+    The top two levels are always expanded; deeper sections only on the current path. -#}
+{% component nav.tree(path: string, current: string, depth: number) %}
+{%- set s = get_section(path=path) -%}
+<li>
+    <a class="{% if depth == 0 %}part{% endif %}{% if s.permalink == current %} active{% endif %}" href="{{ s.permalink }}">{{ s.title }}</a>
+    {%- if depth <= 1 or s.permalink in current %}
+    <ul>
+        {%- for p in s.pages %}
+        <li><a{% if p.permalink == current %} class="active"{% endif %} href="{{ p.permalink }}">{{ p.title }}</a></li>
+        {%- endfor %}
+        {%- for sub in s.subsections %}
+        {{<nav.tree path={sub} current={current} depth={depth + 1} />}}
+        {%- endfor %}
+    </ul>
+    {%- endif %}
+</li>
+{% endcomponent nav.tree %}
+
+{#- Every docs page in reading order, as JSON objects that each start with a comma. -#}
+{% component nav.order(path: string) %}
+{%- set s = get_section(path=path) -%}
+,{"url": {{ s.permalink | json_encode | safe }}, "title": {{ s.title | json_encode | safe }}}
+{%- for p in s.pages %},{"url": {{ p.permalink | json_encode | safe }}, "title": {{ p.title | json_encode | safe }}}{% endfor -%}
+{%- for sub in s.subsections %}{{<nav.order path={sub} />}}{% endfor -%}
+{% endcomponent nav.order %}

@@ -1,0 +1,111 @@
++++
+title = "Cron"
+description = "The crons and cron-handler interfaces."
+weight = 1
++++
+
+## Interface `crons`
+
+Provides handles for crons scheduled through cron expressions.
+
+Every operation that returns a `host-error` fails with `unavailable` if
+the scheduler service is disabled.
+
+### Resource `cron`
+
+A handle to a cron identified by a key.
+
+Handles with the same key refer to the same cron.
+
+Constructing a handle does not register the cron to a schedule. Dropping
+a handle does not deregister the cron from its schedule. A registered
+cron lasts until wpbs stops.
+
+Scheduled executions invoke the exported `cron` callback with this key.
+
+#### Constructor
+
+Creates a handle to the cron identified by the provided key.
+
+```wit
+interface crons {
+    resource cron {
+        constructor(key: string);
+    }
+}
+```
+
+#### Method `register`
+
+Registers a cron to a schedule.
+
+Schedules use [cron expressions](https://docs.rs/cron/0.17.0/cron/)
+in the system's local time zone. Full expressions require a leading
+seconds field and allow an optional trailing year field. Shorthands
+such as `@daily` are also supported.
+
+A failed registration leaves any existing schedule unchanged.
+
+Returns an error if:
+- The provided cron expression is invalid (`invalid-argument`).
+- The cron is already registered to a schedule (`already-exists`).
+
+```wit
+interface crons {
+    resource cron {
+        register: async func(expression: string) -> result<_, host-error>;
+    }
+}
+```
+
+#### Method `update`
+
+Updates a cron to a new schedule.
+
+See the `register` method for more information on the cron
+expression.
+
+A cron preserves its old schedule if this method fails.
+
+Returns an error if:
+- The provided cron expression is invalid (`invalid-argument`).
+- The cron is not registered to a schedule (`not-found`).
+
+```wit
+interface crons {
+    resource cron {
+        update: async func(expression: string) -> result<_, host-error>;
+    }
+}
+```
+
+#### Method `deregister`
+
+Deregisters a cron from a schedule.
+
+Returns an error if the cron is not registered to a schedule
+(`not-found`).
+
+```wit
+interface crons {
+    resource cron {
+        deregister: async func() -> result<_, host-error>;
+    }
+}
+```
+
+## Interface `cron-handler`
+
+Provides the callback that executes crons.
+
+### Function `cron`
+
+Executes the cron identified by the provided key.
+
+Called when the cron's schedule triggers.
+
+```wit
+interface cron-handler {
+    cron: async func(key: string) -> result<_, plugin-error>;
+}
+```

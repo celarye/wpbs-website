@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+{%- set docs_section = get_section(path="docs/_index.md") %}
+<main class="landing">
+    <section class="hero">
+        <div class="hero-text">
+            <h1>wpbs</h1>
+            <p class="tagline">WebAssembly plugin based services</p>
+            <p class="description">{{ section.description }}</p>
+            <p class="actions">
+                <a class="button" href="{{ docs_section.permalink }}">Get Started</a>
+                <a class="button secondary" href="https://github.com/wpbs-rs/wpbs">{{<icon.github />}}GitHub</a>
+            </p>
+        </div>
+        {% include "partials/brand-icon.html" %}
+    </section>
+    <section class="features">
+        {%- for feature in section.extra.features %}
+        <a class="feature" href="{{ get_url(path=feature.link) }}">
+            {{<icon.feature name={feature.icon} />}}
+            <h2>{{ feature.title }}</h2>
+            <p>{{ feature.text }}</p>
+        </a>
+        {%- endfor %}
+    </section>
+</main>
+{% endblock body %}

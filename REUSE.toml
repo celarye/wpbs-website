@@ -1,0 +1,41 @@
+version = 1
+
+[[annotations]]
+path = ["content/**", "reference.py", "static/**", "templates/**"]
+SPDX-FileCopyrightText = "2026 Eduard Smet <contact@celarye.dev>"
+SPDX-License-Identifier = "Apache-2.0 OR MIT"
+
+# Source: https://github.com/WebAssembly/wasi-keyvalue
+[[annotations]]
+path = "content/docs/development/plugins/reference/dependencies/keyvalue/**"
+SPDX-FileCopyrightText = "2019-2023 the Contributors to the WASI Specification"
+SPDX-License-Identifier = "LicenseRef-W3C-CCLA"
+
+# Sources: https://feathericons.com, https://lucide.dev, https://primer.style/octicons
+[[annotations]]
+path = "templates/components/icons.html"
+SPDX-FileCopyrightText = [
+    "2026 Eduard Smet <contact@celarye.dev>",
+    "2013-2023 Cole Bemis",
+    "2026 Lucide Icons and Contributors",
+    "2026 GitHub Inc.",
+]
+SPDX-License-Identifier = "(Apache-2.0 OR MIT) AND MIT AND ISC"
+
+# Source: https://github.com/bytecodealliance/vscode-wit
+[[annotations]]
+path = "syntaxes/wit.tmLanguage.json"
+SPDX-FileCopyrightText = "The vscode-wit contributors"
+SPDX-License-Identifier = "Apache-2.0 WITH LLVM-exception"
+
+[[annotations]]
+path = [
+    ".github/**",
+    ".gitignore",
+    "README.md",
+    "build.sh",
+    "config.toml",
+    "wrangler.toml",
+]
+SPDX-FileCopyrightText = "2026 Eduard Smet <contact@celarye.dev>"
+SPDX-License-Identifier = "CC0-1.0"

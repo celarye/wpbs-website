@@ -1,0 +1,19 @@
+{#- A box with one panel per tab. The tab bar is built from the panels' titles,
+    which are already escaped; the page script makes it work. -#}
+{% component tabs() %}
+<div class="tabs">
+<div class="tab-list" role="tablist">
+{%- for part in body | split(pat='data-title="') %}{% if not loop.first %}
+<button type="button" role="tab" aria-selected="{{ loop.index == 2 }}" tabindex="{% if loop.index == 2 %}0{% else %}-1{% endif %}">{{ part | split(pat='"') | first | safe }}</button>
+{%- endif %}{% endfor %}
+</div>
+{{ body | safe }}
+</div>
+{% endcomponent tabs %}
+
+{#- One panel of a tabs box, labeled by its title. -#}
+{% component tab(title: string) %}
+<div class="tab-panel" data-title="{{ title }}">
+{{ body | safe }}
+</div>
+{% endcomponent tab %}

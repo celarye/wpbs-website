@@ -1,0 +1,192 @@
++++
+title = "Events"
+description = "The subscriptions and event-handler interfaces."
+weight = 1
++++
+
+## Interface `subscriptions`
+
+Provides subscriptions to Discord events.
+
+Every operation that returns a `host-error` fails with `unavailable` if
+the Discord service is disabled or unreachable.
+
+### Resource `event-subscription`
+
+A handle to the plugin's event subscription.
+
+All handles refer to the same subscription.
+
+Constructing a handle does not register the subscription. Dropping a
+handle does not deregister the subscription. A registered subscription
+lasts until wpbs stops.
+
+Events of subscribed kinds invoke the exported `event` callback.
+
+#### Constructor
+
+Creates a handle to the event subscription.
+
+```wit
+interface subscriptions {
+    resource event-subscription {
+        constructor();
+    }
+}
+```
+
+#### Method `register`
+
+Registers the subscription to the provided event kinds.
+
+Only events allowed by the enabled gateway intents are received.
+
+A failed registration leaves any existing subscription unchanged.
+
+Returns an error if the subscription is already registered
+(`already-exists`).
+
+```wit
+interface subscriptions {
+    resource event-subscription {
+        register: async func(kinds: list<event-kind>) -> result<_, host-error>;
+    }
+}
+```
+
+#### Method `update`
+
+Updates the subscription to new event kinds.
+
+See the `register` method for more information on the event kinds.
+
+A subscription preserves its old event kinds if this method fails.
+
+Returns an error if the subscription is not registered
+(`not-found`).
+
+```wit
+interface subscriptions {
+    resource event-subscription {
+        update: async func(kinds: list<event-kind>) -> result<_, host-error>;
+    }
+}
+```
+
+#### Method `deregister`
+
+Deregisters the subscription.
+
+Returns an error if the subscription is not registered
+(`not-found`).
+
+```wit
+interface subscriptions {
+    resource event-subscription {
+        deregister: async func() -> result<_, host-error>;
+    }
+}
+```
+
+### Enum `event-kind`
+
+A kind of Discord event.
+
+```wit
+interface subscriptions {
+    enum event-kind {
+        auto-moderation-action-execution,
+        auto-moderation-rule-create,
+        auto-moderation-rule-delete,
+        auto-moderation-rule-update,
+        ban-add,
+        ban-remove,
+        channel-create,
+        channel-delete,
+        channel-pins-update,
+        channel-update,
+        command-permissions-update,
+        entitlement-create,
+        entitlement-delete,
+        entitlement-update,
+        guild-audit-log-entry-create,
+        guild-create,
+        guild-delete,
+        guild-emojis-update,
+        guild-integrations-update,
+        guild-scheduled-event-create,
+        guild-scheduled-event-delete,
+        guild-scheduled-event-update,
+        guild-scheduled-event-user-add,
+        guild-scheduled-event-user-remove,
+        guild-stickers-update,
+        guild-update,
+        integration-create,
+        integration-delete,
+        integration-update,
+        invite-create,
+        invite-delete,
+        member-add,
+        member-remove,
+        member-update,
+        member-chunk,
+        message-create,
+        message-delete,
+        message-delete-bulk,
+        message-poll-vote-add,
+        message-poll-vote-remove,
+        message-update,
+        presence-update,
+        rate-limited,
+        reaction-add,
+        reaction-remove,
+        reaction-remove-all,
+        reaction-remove-emoji,
+        ready,
+        resumed,
+        role-create,
+        role-delete,
+        role-update,
+        stage-instance-create,
+        stage-instance-delete,
+        stage-instance-update,
+        subscription-create,
+        subscription-delete,
+        subscription-update,
+        thread-create,
+        thread-delete,
+        thread-list-sync,
+        thread-member-update,
+        thread-members-update,
+        thread-update,
+        typing-start,
+        unavailable-guild,
+        user-update,
+        voice-server-update,
+        voice-state-update,
+        webhooks-update,
+    }
+}
+```
+
+## Interface `event-handler`
+
+Provides the callback that handles Discord events.
+
+### Function `event`
+
+Handles a Discord event of the provided kind.
+
+Called for events which have been subscribed to.
+
+The payload is the event's Discord JSON data, or JSON `null` for events
+without data, such as `resumed`.
+
+```wit
+interface event-handler {
+    event: async func(
+        kind: event-kind,
+        payload: json,
+    ) -> result<_, plugin-error>;
+}
+```
