@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found · {{ config.title }}{% endblock title %}
+
+{% block body %}
+{%- set docs_section = get_section(path="docs/_index.md") %}
+<main class="not-found">
+    <p class="code">404</p>
+    <h1>Page not found</h1>
+    <p>This page doesn't exist or has moved. Try searching the docs, or start from one of these pages.</p>
+    <p class="actions">
+        <a class="button" href="{{ get_url(path='/') }}">Home</a>
+        <a class="button secondary" href="{{ docs_section.permalink }}">Docs</a>
+    </p>
+</main>
+{% endblock body %}

@@ -1,0 +1,7 @@
+{#- A section that starts collapsed, with its title as the heading. -#}
+{% component collapsible(title: string) %}
+<details class="collapsible" id="{{ title | slugify }}">
+<summary><h2>{{ title }}</h2></summary>
+{{ body | safe }}
+</details>
+{% endcomponent collapsible %}
